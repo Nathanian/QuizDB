@@ -1,0 +1,10 @@
+
+		EINS
+
+HalloHallo
+1) H
+2) b
+3) 3
+4) 5
+
+Gesamtpunkte: 13

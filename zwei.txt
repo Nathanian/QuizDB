@@ -1,0 +1,28 @@
+
+		ZWEI
+
+Test
+1) H
+2) b
+3) 3
+4) 5
+
+HalloHallo
+1) H
+2) b
+3) 3
+4) 5
+
+HalloHalloHalloHallo
+1) H
+2) b
+3) 3
+4) 5
+
+HalloHalloHalloHalloHalloHalloHalloHallo
+1) H
+2) b
+3) 3
+4) 5
+
+Gesamtpunkte: 52
