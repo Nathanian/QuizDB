@@ -1,7 +1,11 @@
 package data.entities;
 
-public class Kategorie {
-	private int id;
+import java.io.Serializable;
+
+public class Kategorie implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    private int id;
 	private String bezeichnung;	
 	
 	
@@ -9,6 +13,12 @@ public class Kategorie {
 		id = kategorieId;
 		bezeichnung = kategorieBezeichnung;
 	}
+
+	
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
 
 	public int getId() {
 		return id;

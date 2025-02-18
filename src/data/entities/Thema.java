@@ -1,6 +1,10 @@
 package data.entities;
 
-public class Thema {
+import java.io.Serializable;
+
+public class Thema implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private int id;
     private String bezeichnung;
     private Kategorie kategorie; // ✅ Ensure Kategorie is here

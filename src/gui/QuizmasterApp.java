@@ -14,7 +14,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import com.formdev.flatlaf.FlatLightLaf;
-import data.DataManager;
+import data.DataSerializer;
 import data.entities.Frage;
 import gui.entities.QuizButton;
 
@@ -51,31 +51,32 @@ public class QuizmasterApp {
         JLabel titleLabel = new JLabel("Quizmaster App", SwingConstants.CENTER);
         frame.add(titleLabel, BorderLayout.NORTH);
 
-        // Panel for Buttons with a GridLayout. You can adjust this layout as needed.
+        // Panel for Buttons with a GridLayout.
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(3, 1, 10, 10));
 
-        // Create buttons using the new QuizButton class.
+        // Create buttons using the QuizButton class.
         QuizButton addQuestionButton = new QuizButton("Neue Frage erstellen");
         QuizButton browseQuestionsButton = new QuizButton("Fragen durchsuchen");
 
-        // Add Buttons to Panel
+        // Add buttons to the panel.
         buttonPanel.add(addQuestionButton);
         buttonPanel.add(browseQuestionsButton);
 
         frame.add(buttonPanel, BorderLayout.CENTER);
 
-        // Button Actions
+        // Button Actions.
         addQuestionButton.addActionListener(e -> new QuizApp());
         browseQuestionsButton.addActionListener(e -> {
-            List<Frage> fragen = DataManager.getInstance().loadAllFragen();
+            // Load questions from the serialized file.
+            List<Frage> fragen = DataSerializer.loadFragen();
             if (fragen == null) {
-                fragen = new ArrayList<>(); // If null, create an empty list
+                fragen = new ArrayList<>();
             }
             new FrageListGUI(fragen);
         });
 
-        // Center the frame on the screen and display it
+        // Center the frame on the screen and display it.
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }

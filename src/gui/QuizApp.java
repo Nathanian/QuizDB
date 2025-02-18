@@ -1,13 +1,13 @@
 package gui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -18,7 +18,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-import data.DataManager;
+
+import data.DataSerializer;
 import data.entities.Frage;
 import data.entities.Kategorie;
 import data.entities.Thema;
@@ -29,13 +30,12 @@ public class QuizApp extends JFrame {
     private JButton btnSave;
     private JComboBox<String> categoryComboBox, themaComboBox;
     private JCheckBox chckbMehrfachwahl;  
-    // New checkboxes for activating additional answers in two steps:
     private JCheckBox cbAnswer3;  // Activates answer 3 (A3/Ap3)
     private JCheckBox cbAnswer4;  // Activates answer 4 (A4/Ap4)
 
     public QuizApp() {
         setTitle("Quiz Manager");
-        setSize(500, 550);  // increased height to accommodate new checkboxes/rows
+        setSize(500, 550);  // Increased height for additional checkboxes/rows.
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
@@ -43,7 +43,7 @@ public class QuizApp extends JFrame {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
 
-        // Initialize text fields
+        // Initialize text fields.
         txtFrage = new JTextField();
         A1 = new JTextField();
         A2 = new JTextField();
@@ -60,7 +60,7 @@ public class QuizApp extends JFrame {
         A4.setEnabled(false);
         Ap4.setEnabled(false);
 
-        // Initialize the save button with a vibrant blue design.
+        // Initialize the save button.
         btnSave = new QuizButton("Speichern");
         
         // Initialize category and thema combo boxes.
@@ -70,7 +70,7 @@ public class QuizApp extends JFrame {
         // Initialize checkbox for Mehrfachwahl.
         chckbMehrfachwahl = new JCheckBox("Mehrfachwahl");
 
-        // NEW: Checkbox to activate additional answer 3.
+        // Checkbox to activate additional answer 3.
         cbAnswer3 = new JCheckBox("Antwort 3 aktivieren");
         cbAnswer3.setSelected(false);
         cbAnswer3.addActionListener(new ActionListener() {
@@ -80,7 +80,6 @@ public class QuizApp extends JFrame {
                 A3.setEnabled(enable);
                 Ap3.setEnabled(enable);
                 if (!enable) {
-                    // If answer 3 is disabled, clear its fields and disable answer 4 checkbox and fields.
                     A3.setText("");
                     Ap3.setText("");
                     cbAnswer4.setSelected(false);
@@ -90,16 +89,15 @@ public class QuizApp extends JFrame {
                     A4.setText("");
                     Ap4.setText("");
                 } else {
-                    // Enable the checkbox for answer 4.
                     cbAnswer4.setEnabled(true);
                 }
             }
         });
 
-        // NEW: Checkbox to activate additional answer 4.
+        // Checkbox to activate additional answer 4.
         cbAnswer4 = new JCheckBox("Antwort 4 aktivieren");
         cbAnswer4.setSelected(false);
-        cbAnswer4.setEnabled(false); // remains disabled until answer 3 is activated.
+        cbAnswer4.setEnabled(false);
         cbAnswer4.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -126,7 +124,7 @@ public class QuizApp extends JFrame {
         Ap4.setPreferredSize(new Dimension(50, 25));
 
         // Layout components using GridBagLayout.
-        // Row 0: Frage
+        // Row 0: Frage.
         gbc.gridx = 0;
         gbc.gridy = 0;
         formPanel.add(new JLabel("Frage:"), gbc);
@@ -136,7 +134,7 @@ public class QuizApp extends JFrame {
         gbc.weightx = 1.0;
         formPanel.add(txtFrage, gbc);
         
-        // Row 1: Antwort 1 and Punkte 1
+        // Row 1: Antwort 1 and Punkte 1.
         gbc.fill = GridBagConstraints.NONE;
         gbc.weightx = 0;
         gbc.gridx = 0;
@@ -152,7 +150,7 @@ public class QuizApp extends JFrame {
         gbc.gridx = 3;
         formPanel.add(Ap1, gbc);
         
-        // Row 2: Antwort 2 and Punkte 2
+        // Row 2: Antwort 2 and Punkte 2.
         gbc.gridx = 0;
         gbc.gridy = 2;
         formPanel.add(new JLabel("Antwort 2:"), gbc);
@@ -166,14 +164,14 @@ public class QuizApp extends JFrame {
         gbc.gridx = 3;
         formPanel.add(Ap2, gbc);
         
-        // Row 3: Checkbox to activate additional answer 3.
+        // Row 3: Checkbox to activate answer 3.
         gbc.gridx = 0;
         gbc.gridy = 3;
         gbc.gridwidth = 4;
         formPanel.add(cbAnswer3, gbc);
-        gbc.gridwidth = 1; // reset
+        gbc.gridwidth = 1;
         
-        // Row 4: Antwort 3 and Punkte 3 (initially disabled)
+        // Row 4: Antwort 3 and Punkte 3.
         gbc.gridx = 0;
         gbc.gridy = 4;
         formPanel.add(new JLabel("Antwort 3:"), gbc);
@@ -187,14 +185,14 @@ public class QuizApp extends JFrame {
         gbc.gridx = 3;
         formPanel.add(Ap3, gbc);
         
-        // Row 5: Checkbox to activate additional answer 4.
+        // Row 5: Checkbox to activate answer 4.
         gbc.gridx = 0;
         gbc.gridy = 5;
         gbc.gridwidth = 4;
         formPanel.add(cbAnswer4, gbc);
-        gbc.gridwidth = 1; // reset
+        gbc.gridwidth = 1;
         
-        // Row 6: Antwort 4 and Punkte 4 (initially disabled)
+        // Row 6: Antwort 4 and Punkte 4.
         gbc.gridx = 0;
         gbc.gridy = 6;
         formPanel.add(new JLabel("Antwort 4:"), gbc);
@@ -208,7 +206,7 @@ public class QuizApp extends JFrame {
         gbc.gridx = 3;
         formPanel.add(Ap4, gbc);
         
-        // Row 7: Kategorie
+        // Row 7: Kategorie.
         gbc.gridx = 0;
         gbc.gridy = 7;
         formPanel.add(new JLabel("Kategorie:"), gbc);
@@ -216,7 +214,7 @@ public class QuizApp extends JFrame {
         gbc.gridx = 1;
         formPanel.add(categoryComboBox, gbc);
         
-        // Row 8: Thema
+        // Row 8: Thema.
         gbc.gridx = 0;
         gbc.gridy = 8;
         formPanel.add(new JLabel("Thema:"), gbc);
@@ -224,26 +222,26 @@ public class QuizApp extends JFrame {
         gbc.gridx = 1;
         formPanel.add(themaComboBox, gbc);
         
-        // Row 9: Mehrfachwahl checkbox
+        // Row 9: Mehrfachwahl checkbox.
         gbc.gridx = 0;
         gbc.gridy = 9;
         formPanel.add(chckbMehrfachwahl, gbc);
         
-        // Row 10: Save button
+        // Row 10: Save button.
         gbc.gridx = 1;
         gbc.gridy = 10;
         formPanel.add(btnSave, gbc);
         
         add(formPanel, BorderLayout.CENTER);
         
-        // Populate the category combo box and preinitialize themaComboBox.
+        // Populate the category combo box and initialize themaComboBox.
         populateCategories();
         if (categoryComboBox.getItemCount() > 0) {
-            categoryComboBox.setSelectedIndex(0);  // default selection
-            updateThemaComboBox();                 // preload themas for the selected category
+            categoryComboBox.setSelectedIndex(0);
+            updateThemaComboBox();
         }
         
-        // Button action listener to save the question.
+        // Save button action.
         btnSave.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -251,7 +249,7 @@ public class QuizApp extends JFrame {
             }
         });
         
-        // Update the thema combo box when the category selection changes.
+        // Update themaComboBox when category selection changes.
         categoryComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -264,23 +262,30 @@ public class QuizApp extends JFrame {
     }
     
     private void populateCategories() {
-        // Fetch all categories and add them to the category combo box.
-        List<Kategorie> categories = DataManager.getInstance().getAllCategories();
+        // For demonstration, we use a static list of categories.
+        List<Kategorie> categories = new ArrayList<>();
+        categories.add(new Kategorie(1, "Mathematik"));
+        categories.add(new Kategorie(2, "Geschichte"));
         for (Kategorie category : categories) {
             categoryComboBox.addItem(category.getBezeichnung());
         }
     }
     
     private void updateThemaComboBox() {
-        // Get the selected category name.
         String selectedCategory = (String) categoryComboBox.getSelectedItem();
         if (selectedCategory == null) {
             return;
         }
-        // Fetch the themas based on the selected category.
-        List<Thema> themas = DataManager.getInstance().getThemaByKategorie(selectedCategory);
+        // For demonstration, we use a static list of themas.
+        List<Thema> themas = new ArrayList<>();
+        if ("Mathematik".equals(selectedCategory)) {
+            themas.add(new Thema(1, "Algebra", new Kategorie(1, "Mathematik")));
+            themas.add(new Thema(2, "Geometrie", new Kategorie(1, "Mathematik")));
+        } else if ("Geschichte".equals(selectedCategory)) {
+            themas.add(new Thema(3, "Antike", new Kategorie(2, "Geschichte")));
+            themas.add(new Thema(4, "Mittelalter", new Kategorie(2, "Geschichte")));
+        }
         
-        // Clear existing items in the thema combo box and add new ones.
         themaComboBox.removeAllItems();
         for (Thema thema : themas) {
             themaComboBox.addItem(thema.getBezeichnung());
@@ -288,7 +293,7 @@ public class QuizApp extends JFrame {
     }
     
     private void saveFrage() {
-        // First, check that non-points text fields do not exceed 400 characters.
+        // Validate text length.
         StringBuilder lengthErrors = new StringBuilder();
         if (txtFrage.getText().trim().length() > 400) {
             lengthErrors.append("- Die Frage darf maximal 400 Zeichen enthalten.\n");
@@ -313,7 +318,7 @@ public class QuizApp extends JFrame {
             return;
         }
         
-        // Build an error message for missing fields.
+        // Check for missing fields.
         StringBuilder missingFields = new StringBuilder();
         if (txtFrage.getText().trim().isEmpty()) {
             missingFields.append("- Frage\n");
@@ -330,7 +335,6 @@ public class QuizApp extends JFrame {
         if (Ap2.getText().trim().isEmpty()) {
             missingFields.append("- Punkte 2\n");
         }
-        // Only validate A3/Ap3 and A4/Ap4 if their checkboxes are selected.
         if (cbAnswer3.isSelected()) {
             if (A3.getText().trim().isEmpty()) {
                 missingFields.append("- Antwort 3\n");
@@ -362,7 +366,7 @@ public class QuizApp extends JFrame {
             return;
         }
         
-        // Validate that the points fields contain valid integers between 0 and 10.
+        // Validate points fields.
         int point1 = 0, point2 = 0, point3 = 0, point4 = 0;
         StringBuilder numericErrors = new StringBuilder();
         
@@ -411,14 +415,13 @@ public class QuizApp extends JFrame {
             return;
         }
         
-        // Create the Frage object and set its values.
+        // Create the Frage object.
         Frage frage = new Frage();
         frage.setText(txtFrage.getText());
         frage.setA1(A1.getText());
         frage.setAp1(point1);
         frage.setA2(A2.getText());
         frage.setAp2(point2);
-        // Set additional answers only if enabled; otherwise, set empty.
         if (cbAnswer3.isSelected()) {
             frage.setA3(A3.getText());
             frage.setAp3(point3);
@@ -434,28 +437,28 @@ public class QuizApp extends JFrame {
             frage.setAp4(0);
         }
         
-        // Get the selected Kategorie and Thema.
+        // For demonstration, create new Kategorie and Thema objects based on the combo box values.
         String selectedCategory = (String) categoryComboBox.getSelectedItem();
         String selectedThema = (String) themaComboBox.getSelectedItem();
-        Kategorie category = DataManager.getInstance().getCategoryByName(selectedCategory);
-        Thema thema = DataManager.getInstance().getThemaByName(selectedThema);
+        Kategorie category = new Kategorie(0, selectedCategory);
+        Thema thema = new Thema(0, selectedThema, category);
         frage.setThema(thema);
         
         // Set the Mehrfachwahl flag.
         frage.setWahl(chckbMehrfachwahl.isSelected());
         
-        // Save the Frage object.
-        DataManager.getInstance().saveFrage(frage);
+        // Save the Frage via serialization.
+        List<Frage> fragenListe = DataSerializer.loadFragen();
+        if (fragenListe == null) {
+            fragenListe = new ArrayList<>();
+        }
+        fragenListe.add(frage);
+        DataSerializer.saveFragen(fragenListe);
         
         JOptionPane.showMessageDialog(this, "Frage gespeichert!");
-        
-        // Reset all fields to empty/default values.
         clearFields();
     }
     
-    /**
-     * Clears all input fields, resets checkboxes, and reinitializes the comboboxes.
-     */
     private void clearFields() {
         txtFrage.setText("");
         A1.setText("");

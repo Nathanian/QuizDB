@@ -1,25 +1,28 @@
 package data.entities;
 
+import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import data.DataAccessObject;
 
-public class Frage extends DataAccessObject {
+public class Frage extends DataAccessObject implements Serializable{
 
     public final String SQL_INSERT = "INSERT INTO fragen (frage, a1, ap1, a2, ap2, a3, ap3, a4, ap4, wahl, thema_id) " +
                                      "VALUES ('%s', '%s', %d, '%s', %d, '%s', %d, '%s', %d, %b, %d)";
     
     public final String SQL_UPDATE = "UPDATE fragen SET frage = '%s', a1 = '%s', ap1 = %d, a2 = '%s', ap2 = %d, " +
                                      "a3 = '%s', ap3 = %d, a4 = '%s', ap4 = %d, wahl = %b, thema_id = %d WHERE id = %d";
+    private static final long serialVersionUID = 1L; // Ensure compatibility
 
     private int id;
     private String text;
     private String a1, a2, a3, a4;
     private int ap1, ap2, ap3, ap4;
     private boolean wahl;
-    private Thema thema;
-
+    private Thema thema; 
+    
+    
     public Frage(int id, String text, String a1, int ap1, String a2, int ap2, String a3, int ap3, String a4, int ap4, boolean wahl, Thema thema) {
         this.id = id;
         this.text = text;
@@ -46,8 +49,13 @@ public class Frage extends DataAccessObject {
     public Frage() {
         // Default constructor
     }
+    
 
-    public int getId() {
+    public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+	public int getId() {
         return id;
     }
 

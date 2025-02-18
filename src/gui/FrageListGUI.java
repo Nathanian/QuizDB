@@ -11,7 +11,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -31,9 +30,7 @@ public class FrageListGUI extends JFrame {
     private DefaultTableModel tableModel;
     private JTextField searchField;
     private List<Frage> fragenListe;
-    // This list always holds the currently displayed (filtered) questions.
     private List<Frage> displayedFragen;
-    // Checkboxes for filtering question types.
     private JCheckBox einzelwahlCheckBox;
     private JCheckBox mehrfachwahlCheckBox;
 
@@ -49,14 +46,12 @@ public class FrageListGUI extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Create a top panel to hold the search field and filter checkboxes.
+        // Top panel for search and filters.
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         topPanel.add(new JLabel("Suche: "));
         searchField = new JTextField(20);
         topPanel.add(searchField);
 
-        // Create checkboxes for filtering by question type.
-        // Note: The label "Fragentyp:" has been removed as per the new requirements.
         einzelwahlCheckBox = new JCheckBox("Einzelwahl");
         einzelwahlCheckBox.setSelected(true);
         mehrfachwahlCheckBox = new JCheckBox("Mehrfachwahl");
@@ -64,7 +59,6 @@ public class FrageListGUI extends JFrame {
         topPanel.add(einzelwahlCheckBox);
         topPanel.add(mehrfachwahlCheckBox);
 
-        // Add key and action listeners to reapply filtering when criteria change.
         searchField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -76,7 +70,7 @@ public class FrageListGUI extends JFrame {
 
         add(topPanel, BorderLayout.NORTH);
 
-        // Table model and JTable setup.
+        // Table setup.
         tableModel = new DefaultTableModel(new Object[]{"ID", "Frage", "Punkte", "Kategorie"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -85,7 +79,6 @@ public class FrageListGUI extends JFrame {
         };
         table = new JTable(tableModel);
         table.setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        // Enable sorting by clicking on the table headers.
         table.setAutoCreateRowSorter(true);
 
         table.addMouseListener(new MouseAdapter() {
@@ -102,20 +95,18 @@ public class FrageListGUI extends JFrame {
         });
         add(new JScrollPane(table), BorderLayout.CENTER);
 
-        // Button panel at the bottom.
+        // Bottom panel with buttons.
         JPanel buttonPanel = new JPanel();
         QuizButton createQuizButton = new QuizButton("Quiz erstellen");
         createQuizButton.setBackground(new Color(0, 120, 215));
         createQuizButton.setForeground(Color.WHITE);
-        // Initially disable the button.
         createQuizButton.setEnabled(false);
         createQuizButton.addActionListener(e -> createQuizFile());
 
-        // Add a small help button "?" next to the Quiz erstellen button.
         QuizButton helpButton = new QuizButton("?");
         helpButton.setBackground(new Color(0, 120, 215));
         helpButton.setForeground(Color.WHITE);
-        helpButton.setToolTipText("Klicke hier für Hilfe");  // Tooltip on hover.
+        helpButton.setToolTipText("Klicke hier für Hilfe");
         helpButton.addActionListener(e -> {
             JOptionPane.showMessageDialog(this,
                 "Um ein Quiz zu generieren, mehrere Fragen mit STRG+Mausclick markieren und dann den 'Quiz erstellen' Button nutzen.",
@@ -127,11 +118,9 @@ public class FrageListGUI extends JFrame {
         buttonPanel.add(helpButton);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Add a listener to update the enabled state of the quiz button.
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                // Only enable if at least 2 questions are selected.
                 int selectedCount = table.getSelectedRowCount();
                 createQuizButton.setEnabled(selectedCount >= 2);
             }
@@ -140,9 +129,6 @@ public class FrageListGUI extends JFrame {
         populateTable(fragenListe);
     }
 
-    /**
-     * Helper method that inserts a newline character every maxLength characters.
-     */
     private String wrapText(String text, int maxLength) {
         if (text == null) return "";
         StringBuilder wrapped = new StringBuilder();
@@ -158,31 +144,20 @@ public class FrageListGUI extends JFrame {
         return wrapped.toString();
     }
 
-    /**
-     * Displays a dialog with the question details.
-     * Also shows if the question is multiple-choice (Mehrfachwahl).
-     * This method wraps the question text and each answer so that every 40 characters a line break is added.
-     */
     private void showQuestionDetails(int rowIndex) {
-        // Convert view row index to model index.
         int modelRow = table.convertRowIndexToModel(rowIndex);
         Frage selectedFrage = displayedFragen.get(modelRow);
         String message = "Frage: " + wrapText(selectedFrage.getText(), 40) + "\n" +
-                         "Antwort 1: " + wrapText(selectedFrage.getA1(), 40) + " (" + selectedFrage.getAp1() + " Punkte)" + "\n" +
-                         "Antwort 2: " + wrapText(selectedFrage.getA2(), 40) + " (" + selectedFrage.getAp2() + " Punkte)" + "\n" +
-                         "Antwort 3: " + wrapText(selectedFrage.getA3(), 40) + " (" + selectedFrage.getAp3() + " Punkte)" + "\n" +
-                         "Antwort 4: " + wrapText(selectedFrage.getA4(), 40) + " (" + selectedFrage.getAp4() + " Punkte)" + "\n" +
+                         "Antwort 1: " + wrapText(selectedFrage.getA1(), 40) + " (" + selectedFrage.getAp1() + " Punkte)\n" +
+                         "Antwort 2: " + wrapText(selectedFrage.getA2(), 40) + " (" + selectedFrage.getAp2() + " Punkte)\n" +
+                         "Antwort 3: " + wrapText(selectedFrage.getA3(), 40) + " (" + selectedFrage.getAp3() + " Punkte)\n" +
+                         "Antwort 4: " + wrapText(selectedFrage.getA4(), 40) + " (" + selectedFrage.getAp4() + " Punkte)\n" +
                          "Thema: " + (selectedFrage.getThema() != null ? selectedFrage.getThema().getBezeichnung() : "Unbekannt") + "\n" +
                          "Mehrfachwahl: " + (selectedFrage.isWahl() ? "Ja" : "Nein");
 
         JOptionPane.showMessageDialog(this, message, "Frage Details", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    /**
-     * Creates a quiz file based on the selected questions.
-     * When writing the question text and answers to the file, this method wraps
-     * the text every 40 characters.
-     */
     private void createQuizFile() {
         String quizTitle = JOptionPane.showInputDialog(this, "Gib den Titel des Quizzes ein:", "Quiz Titel", JOptionPane.PLAIN_MESSAGE);
         if (quizTitle == null || quizTitle.trim().isEmpty()) return;
@@ -202,7 +177,6 @@ public class FrageListGUI extends JFrame {
                 int questionPoints = frage.getAp1() + frage.getAp2() + frage.getAp3() + frage.getAp4();
                 totalPoints += questionPoints;
                 
-                // Write the question text and answers with wrapped text.
                 writer.write(wrapText(frage.getText(), 40) + (frage.isWahl() ? " (Mehrfachwahl möglich)" : "") + "\n");
                 writer.write("1) " + wrapText(frage.getA1(), 40) + "\n");
                 writer.write("2) " + wrapText(frage.getA2(), 40) + "\n");
@@ -218,10 +192,6 @@ public class FrageListGUI extends JFrame {
         }
     }
 
-    /**
-     * Filters the table to show only those questions where the question text
-     * or the category contains the query, and that match the selected question type(s).
-     */
     private void filterTable(String query) {
         String lowerQuery = query.toLowerCase();
         List<Frage> filtered = fragenListe.stream()
@@ -230,17 +200,12 @@ public class FrageListGUI extends JFrame {
                         && f.getThema().getKategorie() != null 
                         && f.getThema().getKategorie().getBezeichnung().toLowerCase().contains(lowerQuery)))
                     &&
-                    // Check for the question type (Mehrfachwahl / Einzelwahl).
                     ((f.isWahl() && mehrfachwahlCheckBox.isSelected()) || (!f.isWahl() && einzelwahlCheckBox.isSelected()))
             )
             .collect(Collectors.toList());
         populateTable(filtered);
     }
 
-    /**
-     * Populates the table with the provided list of questions and
-     * stores that list as the currently displayed questions.
-     */
     private void populateTable(List<Frage> fragen) {
         displayedFragen = fragen;
         tableModel.setRowCount(0);
