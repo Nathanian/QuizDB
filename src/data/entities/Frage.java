@@ -4,40 +4,16 @@ import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import data.DataAccessObject;
-
 /**
  * Die Klasse {@code Frage} repräsentiert eine Frage im Quizsystem.
  * <p>
- * Sie erweitert {@link DataAccessObject} und implementiert {@link Serializable},
+ * Sie implementiert {@link Serializable},
  * sodass Frage-Objekte in Streams gespeichert und geladen werden können.
  * </p>
  */
-public class Frage extends DataAccessObject implements Serializable {
+public class Frage implements Serializable {
 
-    /**
-     * SQL-Template für das INSERT einer Frage in die Datenbank.
-     * <p>
-     * Platzhalter: <br>
-     * %s: Frage-Text, Antworttexte <br>
-     * %d: Antwortpunkte, Thema-ID <br>
-     * %b: Wahl (boolean)
-     * </p>
-     */
-    public final String SQL_INSERT = "INSERT INTO fragen (frage, a1, ap1, a2, ap2, a3, ap3, a4, ap4, wahl, thema_id) " +
-                                     "VALUES ('%s', '%s', %d, '%s', %d, '%s', %d, '%s', %d, %b, %d)";
-
-    /**
-     * SQL-Template für das UPDATE einer bestehenden Frage in der Datenbank.
-     * <p>
-     * Platzhalter: <br>
-     * %s: Frage-Text, Antworttexte <br>
-     * %d: Antwortpunkte, Thema-ID, Frage-ID <br>
-     * %b: Wahl (boolean)
-     * </p>
-     */
-    public final String SQL_UPDATE = "UPDATE fragen SET frage = '%s', a1 = '%s', ap1 = %d, a2 = '%s', ap2 = %d, " +
-                                     "a3 = '%s', ap3 = %d, a4 = '%s', ap4 = %d, wahl = %b, thema_id = %d WHERE id = %d";
+  
 
     /**
      * Serial-Version UID zur Sicherstellung der Kompatibilität während der Deserialisierung.
@@ -88,23 +64,6 @@ public class Frage extends DataAccessObject implements Serializable {
      */
     public Frage() {
         // Default-Konstruktor
-    }
-
-    /**
-     * Gibt den SQL-String für den Speichervorgang dieser Frage zurück.
-     * <p>
-     * Falls die ID größer als 0 ist, wird davon ausgegangen, dass es sich um ein Update handelt,
-     * andernfalls um ein Insert.
-     * </p>
-     *
-     * @return den formatierten SQL-String
-     */
-    public String getSqlString() {
-        if (id > 0) {
-            return SQL_UPDATE.formatted(text, a1, ap1, a2, ap2, a3, ap3, a4, ap4, wahl, thema, id);
-        } else {
-            return SQL_INSERT.formatted(text, a1, ap1, a2, ap2, a3, ap3, a4, ap4, wahl, thema);
-        }
     }
 
     /**
@@ -330,29 +289,5 @@ public class Frage extends DataAccessObject implements Serializable {
      */
     public void setThema(Thema thema) {
         this.thema = thema;
-    }
-
-    /**
-     * Liefert den Namen der Datenbanktabelle, in der Fragen gespeichert sind.
-     *
-     * @return der Tabellenname "fragen"
-     */
-    public String getTableName() {
-        return "fragen";
-    }
-
-    /**
-     * Setzt die Parameter des übergebenen {@link PreparedStatement} für diese Frage.
-     * <p>
-     * Diese Methode muss die Platzhalter im SQL-String mit den Attributwerten füllen.
-     * Derzeit ist sie nicht implementiert.
-     * </p>
-     *
-     * @param stmt das {@link PreparedStatement}, dessen Parameter gesetzt werden sollen
-     * @throws SQLException falls beim Setzen der Parameter ein Fehler auftritt
-     */
-    @Override
-    protected void setPreparedStatementParameters(PreparedStatement stmt) throws SQLException {
-        // TODO: Implementierung der Parametersetzung für das PreparedStatement
     }
 }
