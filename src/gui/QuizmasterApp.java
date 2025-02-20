@@ -18,6 +18,21 @@ import data.DataSerializer;
 import data.entities.Frage;
 import gui.entities.QuizButton;
 
+/**
+ * Die Hauptanwendung der Quizmaster App.
+ * <p>
+ * Diese Klasse initialisiert das LookAndFeel der Anwendung, erstellt das Hauptfenster und
+ * stellt Schaltflächen bereit, über die der Benutzer Quizfragen erstellen oder durchsuchen kann.
+ * Beim Klicken auf "Neue Frage erstellen" wird die Eingabeoberfläche für Fragen (QuizApp) geöffnet,
+ * während "Fragen durchsuchen" die gespeicherten Fragen (via FrageListGUI) lädt.
+ * </p>
+ * <p>
+ * Hinweis: Der Autor dieser Klasse ist <b>Dein Name</b> (nicht Valentina, welche nur den DBConstants-Code
+ * geschrieben hat).
+ * </p>
+ * 
+ * @author Jan
+ */
 public class QuizmasterApp {
     public static void main(String[] args) {
         // Customize UI Defaults for a Modern, Colorful Look
@@ -41,6 +56,9 @@ public class QuizmasterApp {
         SwingUtilities.invokeLater(QuizmasterApp::createAndShowGUI);
     }
 
+    /**
+     * Erstellt und zeigt die grafische Benutzeroberfläche der Quizmaster App.
+     */
     private static void createAndShowGUI() {
         JFrame frame = new JFrame("");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

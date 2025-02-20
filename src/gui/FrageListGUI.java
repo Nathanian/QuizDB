@@ -9,6 +9,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.swing.JCheckBox;
@@ -25,28 +26,55 @@ import javax.swing.table.DefaultTableModel;
 import data.entities.Frage;
 import gui.entities.QuizButton;
 
+/**
+ * Die Klasse {@code FrageListGUI} stellt eine grafische Benutzeroberfläche zur Anzeige
+ * und Verwaltung von Quizfragen bereit.
+ * <p>
+ * Es können Fragen angezeigt, durchsucht und ausgewählt werden. Mit einem Doppelklick 
+ * auf eine Zeile werden die Detailinformationen der Frage in einem Dialog angezeigt. 
+ * Außerdem kann über eine Auswahl mehrerer Fragen ein Quiz (als Textdatei) erstellt werden.
+ * </p>
+ * 
+ * @author Dein Name
+ */
 public class FrageListGUI extends JFrame {
+    // Tabelle zur Darstellung der Fragen
     private JTable table;
+    // Modell für die JTable
     private DefaultTableModel tableModel;
+    // Textfeld für die Suche
     private JTextField searchField;
+    // Gesamtliste aller Fragen
     private List<Frage> fragenListe;
+    // Liste der aktuell angezeigten Fragen (nach Filterung)
     private List<Frage> displayedFragen;
+    // Checkboxen für Filteroptionen: Einzelwahl und Mehrfachwahl
     private JCheckBox einzelwahlCheckBox;
     private JCheckBox mehrfachwahlCheckBox;
 
+    /**
+     * Erzeugt eine neue Instanz von {@code FrageListGUI} und initialisiert die Anzeige
+     * mit der übergebenen Liste von {@link Frage}-Objekten.
+     *
+     * @param fragen die Liste der anzuzeigenden Fragen
+     */
     public FrageListGUI(List<Frage> fragen) {
         this.fragenListe = fragen;
         initialize();
         setVisible(true);
     }
 
+    /**
+     * Initialisiert die grafische Benutzeroberfläche, legt Layout, Komponenten und deren
+     * Aktionen fest und befüllt die Tabelle mit den Fragen.
+     */
     private void initialize() {
         setTitle("Fragen Liste");
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Top panel for search and filters.
+        // Top-Panel: Suche und Filteroptionen
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         topPanel.add(new JLabel("Suche: "));
         searchField = new JTextField(20);
@@ -59,6 +87,7 @@ public class FrageListGUI extends JFrame {
         topPanel.add(einzelwahlCheckBox);
         topPanel.add(mehrfachwahlCheckBox);
 
+        // Reagiere auf Eingaben im Suchfeld und Änderungen der Filter-Checkboxen.
         searchField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -70,7 +99,7 @@ public class FrageListGUI extends JFrame {
 
         add(topPanel, BorderLayout.NORTH);
 
-        // Table setup.
+        // Tabellenaufbau
         tableModel = new DefaultTableModel(new Object[]{"ID", "Frage", "Punkte", "Kategorie"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -81,10 +110,10 @@ public class FrageListGUI extends JFrame {
         table.setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         table.setAutoCreateRowSorter(true);
 
+        // Bei Doppelklick auf eine Zeile werden die Detailinformationen der Frage angezeigt.
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                // Open details dialog on double-click.
                 if (e.getClickCount() == 2) {
                     int selectedRow = table.getSelectedRow();
                     if (selectedRow != -1) {
@@ -95,7 +124,7 @@ public class FrageListGUI extends JFrame {
         });
         add(new JScrollPane(table), BorderLayout.CENTER);
 
-        // Bottom panel with buttons.
+        // Unteres Panel: Buttons
         JPanel buttonPanel = new JPanel();
         QuizButton createQuizButton = new QuizButton("Quiz erstellen");
         createQuizButton.setBackground(new Color(0, 120, 215));
@@ -118,6 +147,7 @@ public class FrageListGUI extends JFrame {
         buttonPanel.add(helpButton);
         add(buttonPanel, BorderLayout.SOUTH);
 
+        // Aktivierung des "Quiz erstellen"-Buttons, wenn mindestens 2 Fragen ausgewählt wurden.
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
@@ -129,6 +159,13 @@ public class FrageListGUI extends JFrame {
         populateTable(fragenListe);
     }
 
+    /**
+     * Bricht den übergebenen Text in Zeilen um, sodass jede Zeile maximal {@code maxLength} Zeichen enthält.
+     *
+     * @param text der umzubrechende Text
+     * @param maxLength die maximale Länge einer Zeile
+     * @return der umgebrochene Text
+     */
     private String wrapText(String text, int maxLength) {
         if (text == null) return "";
         StringBuilder wrapped = new StringBuilder();
@@ -144,6 +181,11 @@ public class FrageListGUI extends JFrame {
         return wrapped.toString();
     }
 
+    /**
+     * Zeigt die Detailinformationen der in der Tabelle ausgewählten Frage in einem Dialog an.
+     *
+     * @param rowIndex der Index der ausgewählten Zeile in der Tabelle
+     */
     private void showQuestionDetails(int rowIndex) {
         int modelRow = table.convertRowIndexToModel(rowIndex);
         Frage selectedFrage = displayedFragen.get(modelRow);
@@ -158,6 +200,13 @@ public class FrageListGUI extends JFrame {
         JOptionPane.showMessageDialog(this, message, "Frage Details", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    /**
+     * Erstellt eine Quiz-Datei basierend auf den ausgewählten Fragen in der Tabelle.
+     * <p>
+     * Es wird der Benutzer aufgefordert, einen Titel für das Quiz einzugeben. Anschließend werden
+     * alle ausgewählten Fragen sowie die Gesamtpunktzahl in eine Textdatei geschrieben.
+     * </p>
+     */
     private void createQuizFile() {
         String quizTitle = JOptionPane.showInputDialog(this, "Gib den Titel des Quizzes ein:", "Quiz Titel", JOptionPane.PLAIN_MESSAGE);
         if (quizTitle == null || quizTitle.trim().isEmpty()) return;
@@ -192,6 +241,11 @@ public class FrageListGUI extends JFrame {
         }
     }
 
+    /**
+     * Filtert die angezeigten Fragen anhand des Suchbegriffs und der gewählten Filteroptionen (Einzelwahl/Mehrfachwahl).
+     *
+     * @param query der Suchbegriff
+     */
     private void filterTable(String query) {
         String lowerQuery = query.toLowerCase();
         List<Frage> filtered = fragenListe.stream()
@@ -206,6 +260,12 @@ public class FrageListGUI extends JFrame {
         populateTable(filtered);
     }
 
+    /**
+     * Befüllt die Tabelle mit der übergebenen Liste von {@link Frage}-Objekten und aktualisiert die
+     * Liste der aktuell angezeigten Fragen.
+     *
+     * @param fragen die Liste der Fragen, die in der Tabelle dargestellt werden sollen
+     */
     private void populateTable(List<Frage> fragen) {
         displayedFragen = fragen;
         tableModel.setRowCount(0);
