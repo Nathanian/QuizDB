@@ -12,9 +12,6 @@ import java.sql.SQLException;
  * </p>
  */
 public class Frage implements Serializable {
-
-  
-
     /**
      * Serial-Version UID zur Sicherstellung der Kompatibilität während der Deserialisierung.
      */
@@ -41,7 +38,7 @@ public class Frage implements Serializable {
      * @param ap3    Punkte für Antwortmöglichkeit 3
      * @param a4     Antwortmöglichkeit 4
      * @param ap4    Punkte für Antwortmöglichkeit 4
-     * @param wahl   gibt an, ob eine Wahlfrage vorliegt
+     * @param wahl   gibt an, ob eine Mehrfachwahlfrage vorliegt
      * @param thema  das {@link Thema}, zu dem die Frage gehört
      */
     public Frage(int id, String text, String a1, int ap1, String a2, int ap2, String a3, int ap3, String a4, int ap4, boolean wahl, Thema thema) {
@@ -58,14 +55,12 @@ public class Frage implements Serializable {
         this.wahl = wahl;
         this.thema = thema;
     }
-
     /**
      * Standardkonstruktor.
      */
     public Frage() {
         // Default-Konstruktor
     }
-
     /**
      * Gibt die serialVersionUID zurück.
      *
@@ -146,7 +141,6 @@ public class Frage implements Serializable {
     public void setA2(String a2) {
         this.a2 = a2;
     }
-
     /**
      * Liefert die Antwortmöglichkeit 3.
      *

@@ -23,7 +23,6 @@ public class DataSerializer {
      * Speichert die übergebene Liste von {@link Frage}-Objekten in die Datei {@value #FILE_NAME}.
      * <p>
      * Es wird ein {@link ObjectOutputStream} verwendet, um die Liste zu serialisieren.
-     * Bei erfolgreichem Speichern wird eine Bestätigung in der Konsole ausgegeben.
      * </p>
      *
      * @param fragen die Liste der {@link Frage}-Objekte, die gespeichert werden soll
@@ -31,7 +30,6 @@ public class DataSerializer {
     public static void saveFragen(List<Frage> fragen) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_NAME))) {
             oos.writeObject(fragen);
-            System.out.println("Fragen wurden erfolgreich gespeichert.");
         } catch (IOException e) {
             e.printStackTrace();
         }

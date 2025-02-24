@@ -3,7 +3,7 @@ package data.entities;
 import java.io.Serializable;
 
 /**
- * Die Klasse {@code Kategorie} repräsentiert eine Kategorie in der Anwendung.
+ * Die Klasse {@code Kategorie} repräsentiert eine Kategorie passend zum Thema.
  * <p>
  * Sie implementiert {@link Serializable}, um die Serialisierung von Kategorie-Objekten zu ermöglichen.
  * </p>
